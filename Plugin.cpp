@@ -21,7 +21,7 @@ namespace GOTHIC_ENGINE {
             target->GetModel()->StartAni(ani, 0);
         };
     };
-    std::vector<AnimKeyBind> animBinds;
+    std::vector<AnimKeyBind*> animBinds;
 
     static zBOOL ConsoleEval(const zSTRING& s, zSTRING& msg) {
 
@@ -43,16 +43,18 @@ namespace GOTHIC_ENGINE {
 
         if (w1 == "SET" && w2 == "KEYBIND" && !w3.IsEmpty() && !w4.IsEmpty())
         {
-            AnimKeyBind newBind;
-            newBind.keyName = w3;
-            newBind.aniName = w4;
+            AnimKeyBind* newBind = new AnimKeyBind();
+            newBind->keyName = w3.ToChar();
+            newBind->aniName = w4.ToChar();
 
             if (player->GetFocusNpc())
-                newBind.target = player->GetFocusNpc();
+                newBind->target = player->GetFocusNpc();
             else
-                newBind.target = player;
+                newBind->target = player;
 
             animBinds.push_back(newBind);
+
+            return TRUE;
         }
 
         return FALSE;
@@ -124,8 +126,8 @@ namespace GOTHIC_ENGINE {
 
       for (auto it = animBinds.begin(); it != animBinds.end(); it++)
       {
-          if (zinput->KeyToggled(it->key()))
-              it->play();
+          if (zinput->KeyToggled((*it)->key()))
+              (*it)->play();
       }
   }
 

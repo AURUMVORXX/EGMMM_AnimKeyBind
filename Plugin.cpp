@@ -148,6 +148,7 @@ namespace GOTHIC_ENGINE {
   }
 
   void LoadEnd() {
+      animBinds.clear();
   }
 
   void Game_LoadBegin_NewGame() {

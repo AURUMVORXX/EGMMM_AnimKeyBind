@@ -3,6 +3,7 @@
 #include "resource.h"
 #include <map>
 #include <vector>
+#include <algorithm>
 
 namespace GOTHIC_ENGINE {
 
@@ -20,6 +21,8 @@ namespace GOTHIC_ENGINE {
             int ani = target->GetModel()->GetAniIDFromAniName(aniName.c_str());
             target->GetModel()->StartAni(ani, 0);
         };
+
+        bool isValid() { if (target) { return true; } else { return false; } }
     };
     std::vector<AnimKeyBind*> animBinds;
 
@@ -41,20 +44,34 @@ namespace GOTHIC_ENGINE {
         w3.Upper();
         w4.Upper();
 
-        if (w1 == "SET" && w2 == "KEYBIND" && !w3.IsEmpty() && !w4.IsEmpty())
+        if (w1 == "SET" && w2 == "KEYBIND" && !w3.IsEmpty())
         {
-            AnimKeyBind* newBind = new AnimKeyBind();
-            newBind->keyName = w3.ToChar();
-            newBind->aniName = w4.ToChar();
+            std::string keyName = w3;
+            std::transform(keyName.begin(), keyName.end(), keyName.begin(), ::toupper);
 
-            if (player->GetFocusNpc())
-                newBind->target = player->GetFocusNpc();
+            if (!w4.IsEmpty())
+            {
+                AnimKeyBind* newBind = new AnimKeyBind();
+                newBind->keyName = keyName;
+                newBind->aniName = w4.ToChar();
+
+                if (player->GetFocusNpc())
+                    newBind->target = player->GetFocusNpc();
+                else
+                    newBind->target = player;
+
+                animBinds.push_back(newBind);
+
+                return TRUE;
+            }
             else
-                newBind->target = player;
-
-            animBinds.push_back(newBind);
-
-            return TRUE;
+            {
+                for (auto it = animBinds.begin(); it != animBinds.end(); it++)
+                {
+                    if ((*it)->keyName == keyName)
+                        animBinds.erase(it);
+                }
+            }
         }
 
         return FALSE;
@@ -75,6 +92,17 @@ namespace GOTHIC_ENGINE {
       keyNames.insert(std::pair<string, int>("N8", KEY_NUMPAD8));
       keyNames.insert(std::pair<string, int>("N9", KEY_NUMPAD9));
       keyNames.insert(std::pair<string, int>("N0", KEY_NUMPAD0));
+
+      keyNames.insert(std::pair<string, int>("KEY_NUMPAD1", KEY_NUMPAD1));
+      keyNames.insert(std::pair<string, int>("KEY_NUMPAD1", KEY_NUMPAD2));
+      keyNames.insert(std::pair<string, int>("KEY_NUMPAD3", KEY_NUMPAD3));
+      keyNames.insert(std::pair<string, int>("KEY_NUMPAD4", KEY_NUMPAD4));
+      keyNames.insert(std::pair<string, int>("KEY_NUMPAD5", KEY_NUMPAD5));
+      keyNames.insert(std::pair<string, int>("KEY_NUMPAD6", KEY_NUMPAD6));
+      keyNames.insert(std::pair<string, int>("KEY_NUMPAD7", KEY_NUMPAD7));
+      keyNames.insert(std::pair<string, int>("KEY_NUMPAD8", KEY_NUMPAD8));
+      keyNames.insert(std::pair<string, int>("KEY_NUMPAD9", KEY_NUMPAD9));
+      keyNames.insert(std::pair<string, int>("KEY_NUMPAD0", KEY_NUMPAD0));
 
       keyNames.insert(std::pair<string, int>("Q", KEY_Q));
       keyNames.insert(std::pair<string, int>("W", KEY_W));
@@ -111,6 +139,41 @@ namespace GOTHIC_ENGINE {
       keyNames.insert(std::pair<string, int>("PD", KEY_PERIOD));
       keyNames.insert(std::pair<string, int>("SL", KEY_SLASH));
 
+      keyNames.insert(std::pair<string, int>("KEY_Q", KEY_Q));
+      keyNames.insert(std::pair<string, int>("KEY_W", KEY_W));
+      keyNames.insert(std::pair<string, int>("KEY_E", KEY_E));
+      keyNames.insert(std::pair<string, int>("KEY_R", KEY_R));
+      keyNames.insert(std::pair<string, int>("KEY_T", KEY_T));
+      keyNames.insert(std::pair<string, int>("KEY_Y", KEY_Y));
+      keyNames.insert(std::pair<string, int>("KEY_U", KEY_U));
+      keyNames.insert(std::pair<string, int>("KEY_I", KEY_I));
+      keyNames.insert(std::pair<string, int>("KEY_O", KEY_O));
+      keyNames.insert(std::pair<string, int>("KEY_P", KEY_P));
+      keyNames.insert(std::pair<string, int>("KEY_LBRACKET", KEY_LBRACKET));
+      keyNames.insert(std::pair<string, int>("KEY_RBRACKET", KEY_RBRACKET));
+      keyNames.insert(std::pair<string, int>("KEY_A", KEY_A));
+      keyNames.insert(std::pair<string, int>("KEY_S", KEY_S));
+      keyNames.insert(std::pair<string, int>("KEY_D", KEY_D));
+      keyNames.insert(std::pair<string, int>("KEY_F", KEY_F));
+      keyNames.insert(std::pair<string, int>("KEY_G", KEY_G));
+      keyNames.insert(std::pair<string, int>("KEY_H", KEY_H));
+      keyNames.insert(std::pair<string, int>("KEY_J", KEY_J));
+      keyNames.insert(std::pair<string, int>("KEY_K", KEY_K));
+      keyNames.insert(std::pair<string, int>("KEY_L", KEY_L));
+      keyNames.insert(std::pair<string, int>("KEY_SEMICOLON", KEY_SEMICOLON));
+      keyNames.insert(std::pair<string, int>("KEY_APOSTROPHE", KEY_APOSTROPHE));
+      keyNames.insert(std::pair<string, int>("KEY_BACKSLASH", KEY_BACKSLASH));
+      keyNames.insert(std::pair<string, int>("KEY_Z", KEY_Z));
+      keyNames.insert(std::pair<string, int>("KEY_X", KEY_X));
+      keyNames.insert(std::pair<string, int>("KEY_C", KEY_C));
+      keyNames.insert(std::pair<string, int>("KEY_V", KEY_V));
+      keyNames.insert(std::pair<string, int>("KEY_B", KEY_B));
+      keyNames.insert(std::pair<string, int>("KEY_N", KEY_N));
+      keyNames.insert(std::pair<string, int>("KEY_M", KEY_M));
+      keyNames.insert(std::pair<string, int>("KEY_COMMA", KEY_COMMA));
+      keyNames.insert(std::pair<string, int>("KEY_PERIOD", KEY_PERIOD));
+      keyNames.insert(std::pair<string, int>("KEY_SLASH", KEY_SLASH));
+
       zcon->Register("SET KEYBIND", "");
       zcon->AddEvalFunc(ConsoleEval);
   }
@@ -126,6 +189,12 @@ namespace GOTHIC_ENGINE {
 
       for (auto it = animBinds.begin(); it != animBinds.end(); it++)
       {
+          if (!(*it)->isValid())
+          {
+              animBinds.erase(it);
+              continue;
+          }
+
           if (zinput->KeyToggled((*it)->key()))
               (*it)->play();
       }
